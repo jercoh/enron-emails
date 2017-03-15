@@ -1,0 +1,9 @@
+version: '2'
+services:
+  spark:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+      - ./resources:/resources
