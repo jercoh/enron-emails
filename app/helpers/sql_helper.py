@@ -16,7 +16,7 @@ def build_schema():
 def direct_email_query():
     return 'SELECT e.to[0] `recipient`, COUNT(id) `count of direct emails` ' \
            'FROM emails e ' \
-           'WHERE size(e.to) == 1 ' \
+           'WHERE size(e.to) + size(e.cc) + size(e.bcc) == 1 ' \
            'GROUP BY e.to[0] ' \
            'ORDER BY COUNT(id) DESC ' \
            'LIMIT 3'
