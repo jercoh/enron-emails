@@ -24,7 +24,7 @@ def main():
 
         # Direct emails
         spark.sql(sql_helper.direct_email_query()).show()
-
+        #
         # Broadcast emails
         spark.sql(sql_helper.broadcast_email_query()).show()
 

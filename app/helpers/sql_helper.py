@@ -14,32 +14,49 @@ def build_schema():
 
 
 def direct_email_query():
-    return 'SELECT e.to[0] `recipient`, COUNT(id) `count of direct emails` ' \
-           'FROM emails e ' \
-           'WHERE size(e.to) + size(e.cc) + size(e.bcc) == 1 ' \
-           'GROUP BY e.to[0] ' \
-           'ORDER BY COUNT(id) DESC ' \
-           'LIMIT 3'
+    return '''
+        SELECT
+            e.to[0] `recipient`,
+            COUNT(id) `count_direct_emails`
+        FROM emails e
+        WHERE size(e.to) + size(e.cc) + size(e.bcc) == 1
+        GROUP BY e.to[0]
+        ORDER BY COUNT(id) DESC
+        LIMIT 3
+    '''
 
 
 def broadcast_email_query():
-    return 'SELECT e.from `sender`, COUNT(id) `count of broadcast emails` ' \
-           'FROM emails e ' \
-           'WHERE size(e.to) + size(e.cc) + size(e.bcc) > 1 ' \
-           'GROUP BY e.from ' \
-           'ORDER BY COUNT(id) DESC ' \
-           'LIMIT 3'
+    return '''
+        SELECT
+            e.from `sender`,
+            COUNT(id) `count_broadcast_emails`
+        FROM emails e
+        WHERE size(e.to) + size(e.cc) + size(e.bcc) > 1
+        GROUP BY e.from
+        ORDER BY COUNT(id) DESC
+        LIMIT 3
+    '''
 
 
 def response_times_query():
-    return 'SELECT e.id, e.subject `original subject`, le.subject `response subject`, e.from `sender`, e.to `recipient`, unix_timestamp(le.date) - unix_timestamp(e.date) `response time` ' \
-           'FROM emails e ' \
-           'INNER JOIN ' \
-           'emails le ' \
-           'ON locate(e.subject, le.subject) > 0 ' \
-           'AND e.subject != "" ' \
-           'AND le.subject != ""' \
-           'AND (array_contains(le.to, e.from)) ' \
-           'AND unix_timestamp(le.date) - unix_timestamp(e.date) > 0 ' \
-           'ORDER BY `response time`' \
-           'LIMIT 5'
+    return '''
+        SELECT
+            Original.id,
+            Original.subject `original_subject`,
+            Response.subject `response_subject`,
+            Original.from `sender`,
+            Original.to `recipient`,
+            unix_timestamp(Response.date) - unix_timestamp(Original.date) `response_time`
+        FROM emails Original
+           INNER JOIN emails Response
+               ON (
+                  locate(Original.subject, Response.subject) > 0
+                  AND Original.subject != ""
+                  AND Response.subject != ""
+                  AND array_contains(Response.to, Original.from)
+                  AND unix_timestamp(Response.date) - unix_timestamp(Original.date) > 0
+               )
+        ORDER BY `response_time`
+        LIMIT 5
+    '''
