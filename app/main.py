@@ -1,6 +1,8 @@
 import os
 from pyspark import SparkContext
-from app.helpers import email_parser
+from pyspark.sql import SparkSession
+from app.helpers import parser_helper
+from app.helpers import sql_helper
 
 
 def main():
@@ -9,24 +11,22 @@ def main():
         # local computation
         sc = SparkContext("local", "Enron emails")
         emails_rdd = sc.sequenceFile(source_file_path)\
-            .map(lambda t: email_parser.string_to_dict(t[1]))\
+            .map(lambda t: parser_helper.string_to_dict(t[1]))\
             .filter(lambda e: e is not None)\
             .cache()
 
+        spark = SparkSession(sc)
+
+        schema = sql_helper.build_schema()
+        df = emails_rdd.toDF(schema)
+        df.printSchema()
+        df.createOrReplaceTempView("emails")
+
         # Direct emails
-        direct_emails = emails_rdd\
-            .filter(lambda e: len(e['to']) == 1)\
-            .groupBy(lambda e: e['to'][0])\
-            .mapValues(len)
+        spark.sql(sql_helper.direct_email_query()).show()
 
         # Broadcast emails
-        broadcast_emails = emails_rdd\
-            .filter(lambda e: len(e['to']) + len(e['cc']) + len(e['bcc']) > 1)\
-            .groupBy(lambda e: e['from'][0])\
-            .mapValues(len)
-
-        print(direct_emails.takeOrdered(3, lambda x: -x[1]))
-        print(broadcast_emails.takeOrdered(3, lambda x: -x[1]))
+        spark.sql(sql_helper.broadcast_email_query()).show()
 
 
 if __name__ == '__main__':
