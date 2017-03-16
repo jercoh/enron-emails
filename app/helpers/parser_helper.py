@@ -1,4 +1,5 @@
 import email
+import datetime
 from email.utils import parsedate_tz
 
 
@@ -6,10 +7,14 @@ from email.utils import parsedate_tz
 def string_to_dict(email_str):
     message = email.message_from_string(email_str)
     if message and len(message.items()):
+        # parse date with timezone, return a datetime object
+        date_tuple = parsedate_tz(message.get('Date'))
+        if date_tuple:
+            date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
         return {
             'id': message.get('Message-ID'),
-            'date': parsedate_tz(message.get('Date')),
-            'from': split_email_addresses(message.get('From')),
+            'date': date,
+            'from': message.get('From').strip(),
             'to': split_email_addresses(message.get('To')),
             'cc': split_email_addresses(message.get('X-cc')),
             'bcc': split_email_addresses(message.get('X-bcc')),
