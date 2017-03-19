@@ -1,6 +1,25 @@
 from pyspark.sql.types import *
 
+
 def build_schema():
+    """Build a SQL schema
+
+     Returns the following SQL schema:
+     |-- id: string (nullable = true)
+     |-- date: timestamp (nullable = true)
+     |-- from: string (nullable = true)
+     |-- to: array (nullable = true)
+     |    |-- element: string (containsNull = true)
+     |-- cc: array (nullable = true)
+     |    |-- element: string (containsNull = true)
+     |-- bcc: array (nullable = true)
+     |    |-- element: string (containsNull = true)
+     |-- subject: string (nullable = true)
+
+     Returns:
+        StructType: Spark SQL schema
+
+    """
     fields = [
         StructField('id', StringType(), True),
         StructField('date', TimestampType(), True),
@@ -14,6 +33,15 @@ def build_schema():
 
 
 def direct_email_query():
+    """Emails that have exactly one recipient.
+
+    Returns a SQL query answering the following question:
+    Which 3 recipients received the largest number of direct emails?
+
+    Returns:
+        str: SQL query string
+
+    """
     return '''
         SELECT
             e.to[0] `recipient`,
@@ -27,6 +55,15 @@ def direct_email_query():
 
 
 def broadcast_email_query():
+    """Emails that have multiple recipients, including CCs and BCCs.
+
+    Returns a SQL query answering the following question:
+    Which 3 senders sent the largest number of broadcast emails?
+
+    Returns:
+        str: SQL query string
+
+    """
     return '''
         SELECT
             e.from `sender`,
@@ -40,6 +77,15 @@ def broadcast_email_query():
 
 
 def response_times_query():
+    """Emails ordered by response time.
+
+    Returns a SQL query answering the following question:
+    Find the 5 emails with the fastest response times.
+
+    Returns:
+        str: SQL query string
+
+    """
     return '''
         SELECT
             Original.id,
