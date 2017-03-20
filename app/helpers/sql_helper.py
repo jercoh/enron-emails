@@ -94,12 +94,14 @@ def response_times_query():
             Original.from `sender`,
             Original.to `recipient`,
             unix_timestamp(Response.date) - unix_timestamp(Original.date) `response_time`
-        FROM emails Original
+        FROM (
+          SELECT *
+          FROM emails
+          WHERE subject != ""
+        ) Original
            INNER JOIN emails Response
                ON (
                   locate(Original.subject, Response.subject) > 0
-                  AND Original.subject != ""
-                  AND Response.subject != ""
                   AND array_contains(Response.to, Original.from)
                   AND unix_timestamp(Response.date) - unix_timestamp(Original.date) > 0
                )

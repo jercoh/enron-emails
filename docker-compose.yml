@@ -4,6 +4,7 @@ services:
     build:
       context: ./docker/spark
       dockerfile: Dockerfile
+#    command: python app/main.py
     command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
     container_name: spark-master
@@ -38,8 +39,8 @@ services:
     networks:
       - spark
     environment:
-      SPARK_WORKER_CORES: 2
-      SPARK_WORKER_MEMORY: 1500m
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 1g
       SPARK_PUBLIC_DNS: localhost
     links:
       - spark-master
