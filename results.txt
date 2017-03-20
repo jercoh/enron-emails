@@ -1,0 +1,28 @@
+Direct Emails:
++--------------------------+-------------------+
+|recipient                 |count_direct_emails|
++--------------------------+-------------------+
+|maureen.mcvicker@enron.com|115                |
+|vkaminski@aol.com         |43                 |
+|jeff.dasovich@enron.com   |25                 |
++--------------------------+-------------------+
+
+Broadcast Emails:
++---------------------+----------------------+
+|sender               |count_broadcast_emails|
++---------------------+----------------------+
+|steven.kean@enron.com|253                   |
+|john.shelk@enron.com |83                    |
+|j.kaminski@enron.com |44                    |
++---------------------+----------------------+
+
+Response Times:
++---------------------------------------------+----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+-------------------------+----------------------------------------------------+-------------+
+|id                                           |original_subject                                                                              |response_subject                                                                              |sender                   |recipient                                           |response_time|
++---------------------------------------------+----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+-------------------------+----------------------------------------------------+-------------+
+|<3872936.1075853187682.JavaMail.evans@thyme> |Fwd: Portland Consultant's Investigation Finds California Has Capacity for Electricity Needs  |Fwd: Portland Consultant's Investigation Finds California Has Capacity for Electricity Needs  |mary.hain@enron.com      |[richard.sanders@enron.com]                         |180          |
+|<19096180.1075853121576.JavaMail.evans@thyme>|RE: CONFIDENTIAL Personnel issue                                                              |RE: CONFIDENTIAL Personnel issue                                                              |michelle.cash@enron.com  |[lizzette.palmer@enron.com]                         |236          |
+|<15611890.1075843427202.JavaMail.evans@thyme>|Re: CONFIDENTIAL - Residential in CA                                                          |Re: CONFIDENTIAL - Residential in CA                                                          |karen.denne@enron.com    |[james.steffes@enron.com]                           |240          |
+|<4889171.1075843476891.JavaMail.evans@thyme> |RE: Eeegads...                                                                                |RE: Eeegads...                                                                                |paul.kaufman@enron.com   |[jeff.dasovich@enron.com, susan.landwehr@enron.com] |240          |
+|<23471911.1075853121216.JavaMail.evans@thyme>|RE: CONFIDENTIAL Personnel issue                                                              |RE: CONFIDENTIAL Personnel issue                                                              |lizzette.palmer@enron.com|[michelle.cash@enron.com, gina.corteselli@enron.com]|322          |
++---------------------------------------------+----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+-------------------------+----------------------------------------------------+-------------+

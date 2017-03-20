@@ -4,7 +4,6 @@ services:
     build:
       context: ./docker/spark
       dockerfile: Dockerfile
-#    command: python app/main.py
     command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
     hostname: spark-master
     container_name: spark-master

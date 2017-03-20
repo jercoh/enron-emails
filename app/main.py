@@ -36,13 +36,13 @@ def main():
 
         # Queries execution:
         # Direct emails
-        spark.sql(sql_helper.direct_email_query()).show()
+        spark.sql(sql_helper.direct_email_query()).show(truncate=False)
         #
         # Broadcast emails
-        spark.sql(sql_helper.broadcast_email_query()).show()
+        spark.sql(sql_helper.broadcast_email_query()).show(truncate=False)
 
         # Response times
-        spark.sql(sql_helper.response_times_query()).show()
+        spark.sql(sql_helper.response_times_query()).show(truncate=False)
 
 
 if __name__ == '__main__':
