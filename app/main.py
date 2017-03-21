@@ -42,7 +42,7 @@ def main():
         spark.sql(sql_helper.broadcast_email_query()).show(truncate=False)
 
         # Response times
-        spark.sql(sql_helper.response_times_query()).show(truncate=False)
+        spark.sql(sql_helper.response_times_query()).show()
 
 
 if __name__ == '__main__':

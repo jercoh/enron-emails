@@ -14,43 +14,26 @@ def string_to_dict(email_str):
         return {
             'id': message.get('Message-ID'),
             'date': date,
-            'from': message.get('From').strip(),
-            'to': split_email_addresses(message.get('To')),
-            'cc': split_email_addresses(message.get('X-cc')),
-            'bcc': split_email_addresses(message.get('X-bcc')),
+            'sender': message.get('From').strip(),
+            'recipients': get_recipients(message),
             'subject': message.get('Subject'),
         }
     else:
         return None
 
 
-# Parses a text file object and return a dictionary.
-def file_to_dict(f):
-    message = email.message_from_file(f)
-    if message and len(message.items()):
-        # parse date with timezone, return a datetime object
-        date_tuple = parsedate_tz(message.get('Date'))
-        if date_tuple:
-            date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-        return {
-            'id': message.get('Message-ID'),
-            'date': date,
-            'from': message.get('From'),
-            'to': split_email_addresses(message.get('To')),
-            'cc': split_email_addresses(message.get('X-cc')),
-            'bcc': split_email_addresses(message.get('X-bcc')),
-            'subject': message.get('Subject'),
-        }
-    else:
-        return None
+# Returns the set of recipients of an email, including CCs and BCCs.
+def get_recipients(message):
+    recipients = []
+    to = message.get('To')
+    cc = message.get('X-cc')
+    bcc = message.get('X-bcc')
 
+    if to:
+        recipients += list(map(str.strip, to.split(',')))
+    if cc:
+        recipients += list(map(str.strip, cc.split(',')))
+    if bcc:
+        recipients += list(map(str.strip, bcc.split(',')))
 
-# Parses a string containing a comma separated list of email addresses.
-# Returns a list of email addresses
-def split_email_addresses(addresses_str):
-    if addresses_str:
-        addresses = addresses_str.split(',')
-        addresses = list(map(str.strip, addresses))
-    else:
-        addresses = []
-    return addresses
+    return list(set(recipients))

@@ -8,12 +8,7 @@ def build_schema():
      |-- id: string (nullable = true)
      |-- date: timestamp (nullable = true)
      |-- from: string (nullable = true)
-     |-- to: array (nullable = true)
-     |    |-- element: string (containsNull = true)
-     |-- cc: array (nullable = true)
-     |    |-- element: string (containsNull = true)
-     |-- bcc: array (nullable = true)
-     |    |-- element: string (containsNull = true)
+     |-- recipients: array (nullable = true)
      |-- subject: string (nullable = true)
 
      Returns:
@@ -23,10 +18,8 @@ def build_schema():
     fields = [
         StructField('id', StringType(), True),
         StructField('date', TimestampType(), True),
-        StructField('from', StringType(), True),
-        StructField('to', ArrayType(StringType()), True),
-        StructField('cc', ArrayType(StringType()), True),
-        StructField('bcc', ArrayType(StringType()), True),
+        StructField('sender', StringType(), True),
+        StructField('recipients', ArrayType(StringType()), True),
         StructField('subject', StringType(), True)
     ]
     return StructType(fields)
@@ -44,11 +37,11 @@ def direct_email_query():
     """
     return '''
         SELECT
-            e.to[0] `recipient`,
+            e.recipients[0] `recipient`,
             COUNT(id) `count_direct_emails`
         FROM emails e
-        WHERE size(e.to) + size(e.cc) + size(e.bcc) == 1
-        GROUP BY e.to[0]
+        WHERE size(e.recipients) == 1
+        GROUP BY e.recipients[0]
         ORDER BY COUNT(id) DESC
         LIMIT 3
     '''
@@ -66,11 +59,11 @@ def broadcast_email_query():
     """
     return '''
         SELECT
-            e.from `sender`,
+            e.sender `sender`,
             COUNT(id) `count_broadcast_emails`
         FROM emails e
-        WHERE size(e.to) + size(e.cc) + size(e.bcc) > 1
-        GROUP BY e.from
+        WHERE size(e.recipients) > 1
+        GROUP BY e.sender
         ORDER BY COUNT(id) DESC
         LIMIT 3
     '''
@@ -91,8 +84,10 @@ def response_times_query():
             Original.id,
             Original.subject `original_subject`,
             Response.subject `response_subject`,
-            Original.from `sender`,
-            Original.to `recipient`,
+            Original.sender `sender`,
+            Original.recipients `recipients`,
+            Response.sender `response_sender`,
+            Response.recipients `response_recipients`,
             unix_timestamp(Response.date) - unix_timestamp(Original.date) `response_time`
         FROM (
           SELECT *
@@ -102,7 +97,8 @@ def response_times_query():
            INNER JOIN emails Response
                ON (
                   locate(Original.subject, Response.subject) > 0
-                  AND array_contains(Response.to, Original.from)
+                  AND array_contains(Response.recipients, Original.sender)
+                  AND array_contains(Original.recipients, Response.sender)
                   AND unix_timestamp(Response.date) - unix_timestamp(Original.date) > 0
                )
         ORDER BY `response_time`
