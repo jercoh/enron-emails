@@ -19,7 +19,8 @@ def build_schema():
         StructField('id', StringType(), True),
         StructField('date', TimestampType(), True),
         StructField('sender', StringType(), True),
-        StructField('recipients', ArrayType(StringType()), True),
+        StructField('recipient', StringType(), True),
+        StructField('recipients_count', IntegerType(), True),
         StructField('subject', StringType(), True)
     ]
     return StructType(fields)
@@ -37,12 +38,12 @@ def direct_email_query():
     """
     return '''
         SELECT
-            e.recipients[0] `recipient`,
-            COUNT(id) `count_direct_emails`
+            e.recipient `recipient`,
+            COUNT(DISTINCT id) `count_direct_emails`
         FROM emails e
-        WHERE size(e.recipients) == 1
-        GROUP BY e.recipients[0]
-        ORDER BY COUNT(id) DESC
+        WHERE e.recipients_count == 1
+        GROUP BY e.recipient
+        ORDER BY COUNT(DISTINCT id) DESC
         LIMIT 3
     '''
 
@@ -60,11 +61,11 @@ def broadcast_email_query():
     return '''
         SELECT
             e.sender `sender`,
-            COUNT(id) `count_broadcast_emails`
+            COUNT(DISTINCT id) `count_broadcast_emails`
         FROM emails e
-        WHERE size(e.recipients) > 1
+        WHERE e.recipients_count > 1
         GROUP BY e.sender
-        ORDER BY COUNT(id) DESC
+        ORDER BY COUNT(DISTINCT id) DESC
         LIMIT 3
     '''
 
@@ -85,9 +86,6 @@ def response_times_query():
             Original.subject `original_subject`,
             Response.subject `response_subject`,
             Original.sender `sender`,
-            Original.recipients `recipients`,
-            Response.sender `response_sender`,
-            Response.recipients `response_recipients`,
             unix_timestamp(Response.date) - unix_timestamp(Original.date) `response_time`
         FROM (
           SELECT *
@@ -97,8 +95,8 @@ def response_times_query():
            INNER JOIN emails Response
                ON (
                   locate(Original.subject, Response.subject) > 0
-                  AND array_contains(Response.recipients, Original.sender)
-                  AND array_contains(Original.recipients, Response.sender)
+                  AND Response.recipient == Original.sender
+                  AND Original.recipient == Response.sender
                   AND unix_timestamp(Response.date) - unix_timestamp(Original.date) > 0
                )
         ORDER BY `response_time`

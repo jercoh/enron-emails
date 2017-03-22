@@ -20,11 +20,22 @@ I used [tar-to-seq](https://stuartsierra.com/2008/04/24/a-million-little-files),
 
 ## Instructions
 
-Downloads and compiles the email corpus into a SequenceFile
+### Prepare the data
 
-    sh ./build.sh
+The data preparation step runs the following task:
+- Download the enron email corpus to the `/resources folder`
+- Combine all the text files into one Hadoop sequenceFile
+- Parse the email text blobs using Spark and the built-in python email parser
+- Save the resulting RDD into a collection of PickleFiles
 
-Run computation in a Spark cluster (1 master + 2 workers by default) ran in Docker.
+```
+sh ./build.sh
+```
+
+### Run queries
+
+Run computation in a Spark cluster (1 master + 2 workers by default) ran in Docker and using Spark SQL.
+The SQL queries and the schema definition can be found in [app/helpers/sql_helper.py](app/helpers/sql_helper.py)
 
     sh ./run.sh
 
@@ -36,6 +47,7 @@ You can change the number of workers in [run.sh](run.sh) and their allocated res
 
 | file | Description    |
 |---------|-----------------------|
-| [app/main.py](app/main.py) | Main appplication. We define the spark context here, we read a sequenceFile, parse the text emails, transform the RDD into a dataframe and executes the SQL queries.|
+| [app/main.py](app/main.py) | Main appplication. We define the spark context here, we read a pickleFile, transform the RDD into a dataframe and executes the SQL queries.|
+| [app/dataIO/prepare_data.py](app/dataIO/prepare_data.py) | We parse the email text blobs using Spark and save the RDD into pickleFiles.|
 | [app/helpers/parser_helper.py](app/helpers/parser_helper.py) | Helper functions used to parse text emails. |
 | [app/helpers/sql_helper.py](app/helpers/sql_helper.py) | Helper functions for spark SQL. Methods return the SQL schema and SQL queries. |
