@@ -11,14 +11,27 @@ We’d like to answer the following questions about the email messages provided 
 
 
 ## Results
-Results can be found in [results.txt](results.txt)
+Results for the emails sample `enron_with_categories.tar.gz` can be found in [results.txt](results.txt)
 
-## Dependencies
+To get a sense of the robustness of my code, I launched a Spark cluster on Google Cloud DataProc.
+
+I stored the full Enron email corpus (+500K emails) on Google Cloud Storage HDFS and started a simple flask server (flask script here [app/server/flask_app.py](app/server/flask_app.py)) that executes the SQL queries.
+The Spark cluster has the following configuration:
+
+- 1 Master node (2CPUs - 7.5GB Memory) + 7 Workers nodes (4 CPUs - 15 GB Memory)
+
+You can run the queries for the full Enron corpus by accessing these urls:
+
+- http://35.185.42.227/direct-emails
+- http://35.185.42.227/broadcast-emails
+- http://35.185.42.227/response-times
+
+## Local Run Instructions
+
+### Dependencies
 You need to have java, docker and docker-compose installed on your local machine.
 
 I used [tar-to-seq](https://stuartsierra.com/2008/04/24/a-million-little-files), a third party library, in order to combine the email text files into one hadoop sequenceFile.
-
-## Instructions
 
 ### Prepare the data
 
