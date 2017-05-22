@@ -11,7 +11,7 @@ We’d like to answer the following questions about the email messages provided 
 
 
 ## Results
-Results for the emails sample `enron_with_categories.tar.gz` can be found in [results.txt](results.txt)
+Results for the emails sample [`enron_with_categories.tar.gz`](https://www.cs.cmu.edu/~./enron/enron_mail_20150507.tgz) can be found in [results.txt](results.txt)
 
 To get a sense of the robustness of my code, I launched a Spark cluster on Google Cloud DataProc.
 
