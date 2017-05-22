@@ -1,4 +1,4 @@
-# Enron Emails - Slack SLI Technical assignment
+# Enron emails analysis using Spark
 
 
 ## Overview
